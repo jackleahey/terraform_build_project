@@ -2,5 +2,5 @@
 provider "aws" {
 
   # Tells the AWS provider which AWS Region should be used for resources and API requests.
-  region = "us-east-1"
+  region = var.aws_region
 }
