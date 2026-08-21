@@ -24,3 +24,19 @@ module "networking" {
   #Passes the NAT Gateway enable/disable setting into the networking module
   enable_nat_gateway = var.enable_nat_gateway
 }
+
+#Calls the reusable security module for the development environment
+module "security" {
+
+  #Specifies the relative location of the security child module
+  source = "../../modules/security"
+
+  #Passes the development project name into the security module
+  project_name = var.project_name
+
+  #Passes the development environment name into the security module
+  environment = var.environment
+
+  #Passes the VPC ID created by the networking module into the security module
+  vpc_id = module.networking.vpc_id
+}
