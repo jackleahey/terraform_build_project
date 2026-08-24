@@ -40,3 +40,16 @@ module "security" {
   #Passes the VPC ID created by the networking module into the security module
   vpc_id = module.networking.vpc_id
 }
+
+#Calls the reusable IAM module for the development environment
+module "iam" {
+
+  #Specifies the relative location of the IAM child module
+  source = "../../modules/iam"
+
+  #Passes the project name from the DEV into the IAM module
+  project_name = var.project_name
+
+  #Passes the environment name from DEV into the IAM module
+  environment = var.environment
+}
