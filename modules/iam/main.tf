@@ -27,7 +27,7 @@ resource "aws_iam_role" "ec2" {
         }
 
         #Allows EC2 to obtain temporary credentials for this role
-        Action = "sts.AssumeRole"
+        Action = "sts:AssumeRole"
       }
     ]
   })
