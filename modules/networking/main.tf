@@ -151,3 +151,58 @@ resource "aws_route_table_association" "private" {
   # Uses the private route table.
   route_table_id = aws_route_table.private.id
 }
+
+#Creates an Elastic IP only when the NAT Gateway feature is enabled
+resource "aws_eip" "nat" {
+
+  #Creates one Elastic IP when NAT is enabled and non when the NAT is disabled
+  count = var.enable_nat_gateway ? 1 : 0
+
+  #Declares that this Elastic IP is intended for VPC use 
+  domain = "vpc"
+
+  #Applies identifying tags to the Elastic IP
+  tags = {
+
+    #Creates a descriptive Name tag for the NAT Elastic IP
+    Name = "${var.project_name}-${var.environment}-nat-eip"
+  }
+}
+
+#Creates a NAT Gateway only when the NAT feature is enabled
+resource "aws_nat_gateway" "main" {
+
+  #Creates one NAT Gateway when NAT is enabled and none when NAT is disabled
+  count = var.enable_nat_gateway ? 1 : 0
+
+  #Associates the NAT Gateway with the Elastic IP created above.
+  allocation_id = aws_eip.nat[0].id
+
+  #Places the NAT Gateway in the first public subnet
+  subnet_id = aws_subnet.public[0].id
+
+  #Ensures the Internet Gateway exists before Terraform creates the NAT Gateway
+  depends_on = [aws_internet_gateway.main]
+
+  #APplies identifying tags to the NAT Gateway.
+  tags = {
+
+    #Creates the Name tag displayed in AWS.
+    Name = "${var.project_name}-${var.environment}-nat-gateway"
+  }
+}
+
+resource "aws_route" "private_nat" {
+
+  #Creates the route only when NAT is enabled
+  count = var.enable_nat_gateway ? 1 : 0
+
+  #Adds the route to the private route table
+  route_table_id = aws_route_table.private.id
+
+  #Sends all non-local IPv4 traffic toward the NAT Gateway 
+  destination_cidr_block = "0.0.0.0/0"
+
+  #Uses the NAT Gateway as the route target
+  nat_gateway_id = aws_nat_gateway.main[0].id
+}
