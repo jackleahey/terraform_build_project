@@ -13,8 +13,8 @@ data "aws_ami" "amazon_linux" {
     #filters on the AMI name field
     name = "name"
 
-    #Matches Amazon Linux 2023 x86_64 AMIs
-    values = ["al2023-ami-2023*-x86_64"]
+    # Matches standard Amazon Linux 2023 x86_64 AMIs.
+    values = ["al2023-ami-2023.*-x86_64"]
   }
 
   #Filters AMIs to the HVM virtualization type
