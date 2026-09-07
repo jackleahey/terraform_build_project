@@ -53,3 +53,28 @@ module "iam" {
   #Passes the environment name from DEV into the IAM module
   environment = var.environment
 }
+
+#Calls the reusable compute module for the development environment
+module "compute" {
+
+  #Specifies the relative location of the compute child module
+  source = "../../modules/compute"
+
+  #Passes the project name from the development environment into the compute module
+  project_name = var.project_name
+
+  #Passes the development environment name into the compute module
+  environment = var.environment
+
+  #Places the Linux instance into the first private subnet created by the networking module
+  subnet_id = module.networking.private_subnet_ids[0]
+
+  #Attaches the EC2 security group created by the security module
+  security_group_id = module.security.ec2_security_group_id
+
+  #Attaches the EC2 IAM instance profile created by the IAM module
+  instance_profile_name = module.iam.ec2_instance_profile_name
+
+  #Uses a small EC2 instance type for the development lab
+  instance_type = "t3.micro"
+}
