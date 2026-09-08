@@ -8,3 +8,17 @@ output "terraform_execution_role" {
   # This allows us to verify which AWS identity HCP Terraform used during the run.
   value = data.aws_caller_identity.current.arn
 }
+
+#Exposes the Linux EC2 instance ID from the compute module
+output "linux_instance_id" {
+
+  #Returns the instance ID created by the compute module
+  value = module.compute.instance_id
+}
+
+#Exposes the Linux EC2 private IP address
+output "linux_private_ip" {
+
+  #Returns the private IP from the compute module
+  value = module.compute.private_ip
+}
