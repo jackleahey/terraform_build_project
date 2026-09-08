@@ -1,38 +1,16 @@
-#Looks up the most recent Amazon Linux 2023 AMI published by AWS
-data "aws_ami" "amazon_linux" {
+# Retrieves the latest Amazon Linux 2023 x86_64 AMI ID from AWS Systems Manager public parameters.
+data "aws_ssm_parameter" "amazon_linux_ami" {
 
-  #Selects the most recent AMI that matches the filters below
-  most_recent = true
-
-  #Restricts results to AMIs owned by Amazon
-  owners = ["amazon"]
-
-  #Filters AMIs by the standard Amazon Linux 2023 x86_64 naming pattern
-  filter {
-
-    #filters on the AMI name field
-    name = "name"
-
-    # Matches standard Amazon Linux 2023 x86_64 AMIs.
-    values = ["al2023-ami-2023.*-kernel-*-x86_64"]
-  }
-
-  #Filters AMIs to the HVM virtualization type
-  filter {
-
-    #Filters on the virtualization type field
-    name = "virtualization-type"
-
-    #Requires HVM virtualization
-    values = ["HVM"]
-  }
+  # Uses the AWS-maintained parameter that points to the
+  # latest standard Amazon Linux 2023 x86_64 AMI.
+  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
 }
 
 #Creates the private Linux EC2 instance used for Linux, Anisble, Go and future labs
 resource "aws_instance" "linux" {
 
-  #Uses the dynamically discovered Amazon Linux 2023 AMI
-  ami = data.aws_ami.amazon_linux.id
+  # Uses the latest Amazon Linux 2023 AMI ID returned by the AWS-maintained SSM public parameter.
+  ami = data.aws_ssm_parameter.amazon_linux_ami.value
 
   #Uses the instance type supplied to this module
   instance_type = var.instance_type

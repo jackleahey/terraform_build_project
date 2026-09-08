@@ -16,5 +16,5 @@ output "private_ip" {
 output "ami_id" {
 
   #Returns the dynamically selected Amazon Linux AMI ID
-  value = data.aws_ami.amazon_linux.id
+  value = data.aws_ssm_parameter.amazon_linux_ami.value
 }
